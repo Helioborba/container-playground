@@ -16,6 +16,22 @@ services:
             - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
         depends_on:
             - worker
+    server_worker:
+        stdin_open: true
+        #command: npm run start
+        build:
+            context: "./serverWorker"
+            dockerfile: Dockerfile
+        restart: on-failure
+        volumes:
+            - 'D:/workshop/container-playground/serverWorker:/serverWorker'
+       
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+        depends_on:
+            - redis
     worker:
         stdin_open: true
         #command: npm run start
@@ -25,13 +41,13 @@ services:
         restart: on-failure
         volumes:
             - 'D:/workshop/container-playground/worker:/worker'
-       
         environment:
             - REDIS_HOST=redis
             - REDIS_PORT=6379
             - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
         depends_on:
             - redis
+
     # api:
     #     stdin_open: true
     #     environment:
@@ -88,7 +104,7 @@ services:
             - "3000:80"
         depends_on: 
             - client
-            - worker
+            - server_worker
         volumes: 
         - ./nginx/default_dev.conf:/etc/nginx/conf.d/default.conf
     # mysql_db:

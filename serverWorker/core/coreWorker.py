@@ -5,27 +5,14 @@ from unicodedata import name
 import redis
 from flask import Flask, jsonify
 from rq import Worker, Queue, Connection
-import time
-import sys
 from tasks.task import count_words_at_url
 from redis import Redis
 from datetime import datetime
-sys.path.insert(0, '/')
-listen = ['3200']
-conn = redis.Redis(host=os.environ['REDIS_HOST'], port=os.environ['REDIS_PORT'], password=os.environ['REDIS_PASSWORD'])
-q = Queue(connection=conn)
+
+conn = redis.from_url('redis://:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81@redis:6379')
+#rq info --url redis://:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81@redis:6379 -R
 conn.ping()
 
-# datetime object containing current date and time
-
-
-# dd/mm/YY H:M:S
-
-
-
-
-# app = Flask(__name__) # Setar Dir padrão para futuros templates assim como criação do APP
-# print('root',app.root_path)
 
 # @app.route('/', methods=['GET']) #home
 # def home():
@@ -58,7 +45,7 @@ conn.ping()
 #         w = Worker(qs,name='strider')
 #         w.work()
 #"password='eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81'"
-if __name__ == '__main__':
+# if __name__ == '__main__':
     #with Connection(conn):
         # queue = Queue('default')
         # w = Worker([queue],connection=conn, name='foo')
@@ -68,11 +55,11 @@ if __name__ == '__main__':
         # worker = workers[0]
         # print("name",worker.name)
         #app.run(host='0.0.0.0', port=3200, debug=True)
-    with Connection(conn):
-        qs = sys.argv[1:] or ['default']
+    # with Connection(conn):
+    #     qs = sys.argv[1:] or ['default']
 
-        w = Worker(qs,name='strider')
-        w.work()
+    #     w = Worker(qs,name='strider')
+    #     w.work()
     # with Connection(conn):
     #     worker = Worker(list(map(Queue, listen)),name='archer')
     #     worker.work()

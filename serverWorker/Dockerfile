@@ -1,6 +1,6 @@
 FROM python:3.9-alpine3.14
 
-WORKDIR /worker
+WORKDIR /serverWorker
 COPY ./ ./
 
 RUN apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-dev && \
@@ -9,7 +9,7 @@ RUN apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-
 RUN pip install --upgrade pip
 RUN yes | pip install -r requirements.txt
 # flask run não esta sendo utilizado?
-# RUN chmod +x ./flask-run-win.sh 
+RUN chmod +x ./flask-run-win.sh 
 
-CMD ["python","-u","start.py"]
+CMD ["python","-u","./app.py"]
 

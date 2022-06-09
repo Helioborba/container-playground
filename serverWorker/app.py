@@ -3,15 +3,10 @@ import redis
 from flask import Flask, jsonify
 from rq import Worker, Queue, Connection
 import time
-import sys
 from tasks.task import count_words_at_url
 from redis import Redis
 from datetime import datetime
 from core.coreWorker import conn
-sys.path.insert(0, '/')
-# listen = ['3200']
-#conn = redis.Redis(host=os.environ['REDIS_HOST'], port=os.environ['REDIS_PORT'], password=os.environ['REDIS_PASSWORD'])
-# conn.ping()
 
 # datetime object containing current date and time
 now = datetime.now()
@@ -29,13 +24,20 @@ def home():
 
 @app.route('/gets',methods=['GET','POST'])
 def gedata():
+    # datetime object containing current date and time
+    now = datetime.now()
+
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+
+    # creates the job
     q = Queue(connection=conn)
     workers = Worker.all(connection=conn)
-    #job = q.enqueue(count_words_at_url,'http://nvie.com', job_id='5000', result_ttl=5000)
     job = q.enqueue(count_words_at_url, 'http://nvie.com', result_ttl=5000)
     job.meta['creation_date'] = dt_string
     job.save_meta()
-    print(f'Job id: {job.id}')
+    
+    # Returns the data of the job
     json = []
     json.append(
         {  
@@ -55,7 +57,8 @@ def gedata():
             "status: ": job.get_status(),
             "name":"hey",
             "x":1,
-            "y":1
+            "y":1,
+            "worker":workers[0].name
         }
     )
     job2 = q.jobs
