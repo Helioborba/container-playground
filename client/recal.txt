@@ -1,0 +1,66 @@
+we can use a form to get x, y before drawing
+insert all of that into city.py
+you need db migrate to be here
+dont forget that those dam url_for uses the functions names rather then paths
+https://cssgradient.io/ useful
+
+game design:
+add buttons to the right for placement of cities
+use the coordinates on those buttons inside the canvas to create a limit around where to place.
+add auto place city with timer
+add alert for case the city cannot be place at border or in range to other (10px range of distance) and for showing which tools is being used
+add stop
+count for currrent coords dont forget
+add chat for current progress
+add placement for the person location
+destroy location of drop on click
+leave trail behind, using the clearCar function with some steps instead...
+for pathfinding, later I could use the astar to calc the city points inside the nodes to make it more elegant
+
+car deliver
+select city target as red
+select start city as green
+select alread visited cities as yellow
+add a status bar
+add a boost bar
+add a save state
+
+this is for grid layout
+https://www.youtube.com/watch?v=Qv1c4Q4PBns interesting
+I think I should create a whole file dedicated only to the path finding, that way we can easily import the object data without having to declare it in every f class
+rangefind - sets first the target city with findclosest, then uses sonar (another range find) to find closest target not visited as new cities are added
+
+
+last node has something to do with parent node, also, the node file does not have it in the obj so maybe we can find it in those inits from pathFind
+new problem, the visited is instantly triggered, need to find a better place to put it (maybe inside the function itsel)
+pegar posicao atual, checar se ela esta visitada e puxar pra fora do array, re pesquisar cidades proximas, levar em cosideracao a pesquisa dos outros
+latest problem, blocking functions loop
+
+because of how javascript handle loops, we cannot use the method of changing it using a loop
+instead, we are going to use a object holding the state and update it real timer
+instead of interactions, we are going to use triggers
+
+promises should be used to call imediate actions upon code retrieves only
+current problem: targets left should be evaluated before breaking
+cars are spawning from the beginning
+
+
+create a file called reload to get all the data
+store all visited cities objects
+create a button to reset visited
+
+need to create a array as well to keep track of all the cars
+all = array []
+for each obj
+array.push( {
+    carNum : dynamic
+    carCoords : 123234
+})
+
+const person = {
+    .. obj name for the car {}
+    name: "Obaseki Nosa",
+    location: "Lagos",
+}
+
+window.localStorage.setItem('user', JSON.stringify(person));
