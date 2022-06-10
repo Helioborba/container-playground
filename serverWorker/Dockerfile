@@ -8,8 +8,10 @@ RUN apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-
 
 RUN pip install --upgrade pip
 RUN yes | pip install -r requirements.txt
-# flask run não esta sendo utilizado?
+# why is this not used?
+## R_ THIS WILL CREATE A PROBLEM IF NOT USED FOR MIGRATIONS, THE ENV WILL NOT BE FLASK MAIN BUT RATHER APP
 RUN chmod +x ./flask-run-win.sh 
+
 
 CMD ["python","-u","./app.py"]
 

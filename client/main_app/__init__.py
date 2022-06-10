@@ -14,7 +14,7 @@ app = Flask(__name__,template_folder=dir) # Setar Dir padrão para futuros templ
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'mysecretkey'
-
+# app.config['SERVER_NAME'] = 'client.localdomain:8000'
 db = SQLAlchemy(app) 
 Migrate(app, db)
 

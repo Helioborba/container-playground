@@ -1,22 +1,19 @@
 
+from crypt import methods
 import redis
-from flask import Flask, jsonify
-from rq import Worker, Queue, Connection
+from flask import jsonify,request
+from rq import Worker, Queue
 import time
-from tasks.task import count_words_at_url
-from redis import Redis
+from main.todo.tas import count_words_at_url
 from datetime import datetime
 from core.coreWorker import conn
+from model.city import City
+from main import app,db
 
 # datetime object containing current date and time
 now = datetime.now()
-
-# dd/mm/YY H:M:S
 dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
-
-
-app = Flask(__name__) # Setar Dir padrão para futuros templates assim como criação do APP
 # Routes
 @app.route('/', methods=['GET']) # home
 def home():
@@ -25,6 +22,7 @@ def home():
 @app.route('/gets',methods=['GET','POST'])
 def gedata():
     # datetime object containing current date and time
+
     now = datetime.now()
 
     # dd/mm/YY H:M:S
@@ -104,6 +102,28 @@ def gedata():
     return jsonify(json)
 
 
+@app.route('/add',methods=['POST'])
+def ad():
+    data = request.get_json()
+    city = City(data['city'], data['coords'])
+
+    # O PROBLEMA ESTA AQUI
+    db.session.add(city)
+    db.session.commit()
+    return jsonify({"status":"200","d":f"{city.name}"})
+    
+@app.route('/db',methods=['GET','POST'])
+def db():
+    query_city = City.query.all()
+    json = []
+    for value in query_city:
+        json.append(
+            {
+                "name":value.name,
+                "x":value.coordinate_x,
+                "y":value.coordinate_y
+            }
+        )
 # Start the app as the main
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3200, debug=True)

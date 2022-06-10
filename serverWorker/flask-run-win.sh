@@ -19,7 +19,7 @@ checar() { #Checa se o venv esta ativo (no caso, o venv TEM de se chamar venv (o
 ## Iniciar Flask
 enflask() { #Script principal, vai rodar o flask em modo de desenvolvimento, necessita do parametro start
 	echo "Iniciando o flask... apenas um segundo!"
-	export FLASK_APP=app
+	export FLASK_APP=main.py
 	export FLASK_ENV=development
 	python ./app.py
 	echo 'flask fechado.'

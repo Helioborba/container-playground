@@ -3,7 +3,7 @@ from flask.helpers import flash
 from main_app import db
 from main_app.model.city import City
 from main_app.controller.form_city import FormAdd, FormClear, FormSearch
-
+import requests
 city_blueprint = Blueprint('city',__name__) # Interessante! caso seja utilizado ./templates/city, pode dar conflito com outros! então, colocar /city apenas no rendertemplate
 
 @city_blueprint.route('/add_city', methods=['GET','POST'])
@@ -17,13 +17,18 @@ def add_city():
             "x":coordinate_x,
             "y":coordinate_y
         }
-        
-        city = City(city, coordinates)
-        db.session.add(city)
-        db.session.commit()
 
-        flash(f'Cidade adicionada com sucesso.')
-        return redirect(url_for('city.add_city'))
+        dat = {
+            "city": city,
+            "coords": coordinates
+        }
+        x = requests.post('http://nginx:80/server/add',json=dat)
+        # city = City(city, coordinates)
+        # db.session.add(city)
+        # db.session.commit()
+
+        flash(f'Cidade adicionada, status:{x.text}.')
+        return redirect(url_for('city.add_city',_external=True))
     return render_template('form_city.html', titulo='Adicionar Cidade',  form=form, teste='files')
 
 # @city_blueprint.route('/excluir', methods=['GET','POST'])

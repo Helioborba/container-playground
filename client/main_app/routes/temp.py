@@ -36,7 +36,7 @@ def matches():
 
 @temp_blueprint.route('/extract', methods=['GET', 'POST'])
 def extract():
-   
+    
     json = []
     # time.sleep(2)
     # json.append(
