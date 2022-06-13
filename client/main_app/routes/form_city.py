@@ -1,6 +1,5 @@
 from flask import Blueprint,render_template,redirect,url_for
 from flask.helpers import flash
-from main_app import db
 from main_app.model.city import City
 from main_app.controller.form_city import FormAdd, FormClear, FormSearch
 import requests
@@ -17,11 +16,12 @@ def add_city():
             "x":coordinate_x,
             "y":coordinate_y
         }
-
+    
         dat = {
             "city": city,
             "coords": coordinates
         }
+
         x = requests.post('http://nginx:80/server/add',json=dat)
         # city = City(city, coordinates)
         # db.session.add(city)
@@ -49,21 +49,24 @@ def add_city():
 def list_city():
     form = FormSearch()
     clear = FormClear()
-    query_city = None
+    cityList = None
     # Buscar no form
     if form.validate_on_submit():
         city = form.city.data
-        query_city = City.query.filter(City.name.like(f"{city}%"))
-        return render_template('list.html', titulo='City List', city_data=query_city, form=form, clear=clear)
+        data = {'city':city}
+        cityList = requests.post('http://nginx:80/server/search',json=data).json()
+        return render_template('list.html', titulo='City List', city_data=cityList['city'], form=form, clear=clear)
 
     # Limpa o form após pesquisa feita.
     if clear.validate_on_submit():
-        query = City.query.all()
-        return render_template('list.html', titulo='City List', city_data=query, form=form)
+        cityList = requests.get('http://nginx:80/server/all').json()
+       
+
+        return render_template('list.html', titulo='City List', city_data=cityList['city'], form=form)
 
     # Roda sempre na primeira vez
-    if query_city == None:
-        query_city = City.query.all()
+    if cityList == None:
+        cityList = requests.get('http://nginx:80/server/all').json()
         
-    return render_template('list.html', titulo='City List', city_data=query_city, form=form)
+    return render_template('list.html', titulo='City List', city_data=cityList['city'], form=form)
 

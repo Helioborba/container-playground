@@ -5,12 +5,18 @@
 import os
 from flask import render_template, send_from_directory
 from main_app.helpers.errorHandlers.responses import ApiRaisedError, createJsonRaisedError # used for errors
-from main_app import app
+from main_app import app, db
 
 # Routes
 @app.route('/', methods=['GET']) # home
 def home():
     return render_template('home.html', titulo='Home')
+
+# Used for debugging
+@app.route('/ex', methods=['GET']) # home
+def ex():
+    return render_template('ex.html', titulo='Home', ex=type(db))
+
 
 @app.route('/favicon.ico')
 def favicon(): 

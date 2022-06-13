@@ -12,7 +12,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'mysecretkey'
 
-db = SQLAlchemy(app) 
+db = SQLAlchemy(app)
 Migrate(app, db)
 
 

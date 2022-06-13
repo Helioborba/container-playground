@@ -4,11 +4,11 @@ import redis
 from flask import jsonify,request
 from rq import Worker, Queue
 import time
-from main.todo.tas import count_words_at_url
+from tasks.task1 import count_words_at_url
 from datetime import datetime
 from core.coreWorker import conn
 from model.city import City
-from main import app,db
+from main import app, db
 
 # datetime object containing current date and time
 now = datetime.now()
@@ -106,14 +106,41 @@ def gedata():
 def ad():
     data = request.get_json()
     city = City(data['city'], data['coords'])
-
-    # O PROBLEMA ESTA AQUI
     db.session.add(city)
     db.session.commit()
-    return jsonify({"status":"200","d":f"{city.name}"})
-    
+
+    return jsonify({"status":"200"})
+
+@app.route('/search',methods=['POST'])
+def search():
+    data = request.get_json()
+    query_city = City.query.filter(City.name.like(f"{data['city']}%"))
+    newCityData = []
+    for city in query_city:
+        newCityData.append({
+            "id": city.id,
+            "name": city.name,
+            "coordinate_x": city.coordinate_x,
+            "coordinate_y": city.coordinate_y
+        })
+    return jsonify({"city":newCityData})
+
+@app.route('/all',methods=['GET'])
+def all():
+    query_city = City.query.all()
+    newCityData = []
+    for city in query_city:
+        newCityData.append({
+            "id": city.id,
+            "name": city.name,
+            "coordinate_x": city.coordinate_x,
+            "coordinate_y": city.coordinate_y
+        })
+    return jsonify({"city":newCityData})
+
+
 @app.route('/db',methods=['GET','POST'])
-def db():
+def db_access():
     query_city = City.query.all()
     json = []
     for value in query_city:
