@@ -1,10 +1,11 @@
 
 from crypt import methods
+from unicodedata import name
 import redis
 from flask import jsonify,request
 from rq import Worker, Queue
 import time
-from tasks.task1 import count_words_at_url
+from tasks.task1 import count_words_at_url, get_all_db, add_db
 from datetime import datetime
 from core.coreWorker import conn
 from model.city import City
@@ -68,7 +69,7 @@ def gedata():
                 resQ = 'No creation date added' 
             json.append(
             {
-                "queue": {
+                "allJbs": {
                     "value: ": q.result,
                     "job_ID: ": q.id,
                     "status: ": q.get_status(),
@@ -81,15 +82,16 @@ def gedata():
             resQ = None
             try:
                 resQ = q.meta['creation_date']
-            except: # this will only mean that the meta is not visible
+            except: #this will only mean that the meta is not visible
                 resQ = 'No creation date added' 
             json.append(
             {
                 "worker": {
                     "worker Name: ":x.name,
-                    "worker State: ":x.state,
+                    "worker State: ":x.state, 
                     "working time: ":x.total_working_time,
-                    "fail rate: ":x.failed_job_count
+                    "fail rate: ":x.failed_job_count,
+                    "success rate":x.successful_job_count
                 },
                 "queue": {
                     "value: ": q.result,
@@ -103,12 +105,21 @@ def gedata():
 
 
 @app.route('/add',methods=['POST'])
-def ad():
+def add():
     data = request.get_json()
+    # q = Queue(connection=conn)
+    # job = q.enqueue(add_db, data, result_ttl=5000)
+    # job.meta['creation_date'] = dt_string
+    # job.save_meta()
+    # status = job.result
+
+    # city = City(data['city'], data['coords'])
+    # db.session.add(city)
+    # db.session.commit()
     city = City(data['city'], data['coords'])
     db.session.add(city)
     db.session.commit()
-
+    # status = add_db(data)
     return jsonify({"status":"200"})
 
 @app.route('/search',methods=['POST'])
@@ -127,15 +138,22 @@ def search():
 
 @app.route('/all',methods=['GET'])
 def all():
-    query_city = City.query.all()
-    newCityData = []
-    for city in query_city:
-        newCityData.append({
-            "id": city.id,
-            "name": city.name,
-            "coordinate_x": city.coordinate_x,
-            "coordinate_y": city.coordinate_y
-        })
+    # Create redis queue
+    q = Queue(connection=conn)
+    job = q.enqueue(get_all_db,job_id='queue get', result_ttl=5000)
+    job.meta['creation_date'] = dt_string
+    job.save_meta()
+    newCityData = job.result
+
+    # query_city = City.query.all()
+    # newCityData = []
+    # for city in query_city:
+    #     newCityData.append({
+    #         "id": city.id,
+    #         "name": city.name,
+    #         "coordinate_x": city.coordinate_x,
+    #         "coordinate_y": city.coordinate_y
+    #     })
     return jsonify({"city":newCityData})
 
 

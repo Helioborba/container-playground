@@ -8,7 +8,7 @@ app = Flask(__name__) # Setar Dir padrão para futuros templates assim como cria
 
 # config the db needs
 basedir = os.path.abspath(os.path.dirname(__file__)) # Criação de PATH para futuros items
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:any@postgres_db/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'mysecretkey'
 

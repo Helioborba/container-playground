@@ -11,7 +11,7 @@ app = Flask(__name__,template_folder=dir) # Setar Dir padrão para futuros templ
 
 # Criar db, con e confs
 #app.config.from_object(os.environ['APP_SETTINGS'])
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'mysecretkey'
 # app.config['SERVER_NAME'] = 'client.localdomain:8000'

@@ -3,7 +3,7 @@ FROM python:3.9-alpine3.14
 WORKDIR /serverWorker
 COPY ./ ./
 
-RUN apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-dev && \
+RUN apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-dev postgresql-dev && \
     apk add --no-cache --update python3 
 
 RUN pip install --upgrade pip
