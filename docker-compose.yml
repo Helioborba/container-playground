@@ -8,9 +8,12 @@ services:
             dockerfile: Dockerfile
         restart: on-failure
         volumes:
-            - 'D:/workshop/container-playground/client:/client'
-    
+            - /app/node_modules
+            - 'D:/workshop/container-playground/client:/app'
+
         environment:
+            - NODE_ENV=development
+            - CHOKIDAR_USEPOLLING=true
             - REDIS_HOST=redis
             - REDIS_PORT=6379
             - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81

@@ -18,7 +18,6 @@ def get_all_db():
 def add_db(data):
     #query_city = City.query.all()
     city = City(data['city'], data['coords'])
-    db.session.rollback()
     db.session.add(city)
     db.session.commit()
     # session.close_all()

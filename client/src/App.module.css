@@ -1,0 +1,10 @@
+/* The main css for the whole App */
+.App {
+  display: flex;
+  flex-direction: column; 
+  text-align: center;
+  color: #ffffff;
+  margin:0;
+  overflow: hidden;
+}
+

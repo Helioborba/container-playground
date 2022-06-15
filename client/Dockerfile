@@ -1,15 +1,25 @@
-FROM python:3.9-alpine3.14
+#
+FROM node:16.5.0-alpine3.11 as main
+#give name if youre going to use main on copy for example instead of 0
 
-WORKDIR /client
+# WORK FOLDER
+WORKDIR /app  
+
+# Copy first the package json, else it will rerun ALL the installs, bad idea
+COPY ./package.json ./
+RUN npm install
 COPY ./ ./
+RUN npm run build 
 
-RUN apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-dev && \
-    apk add --no-cache --update python3 
+# Bug do eslint não encontrado
+RUN chown node:node /app/node_modules/.cache/.eslintcache
 
-RUN pip install --upgrade pip
-RUN yes | pip install -r requirements.txt
-# flask run não esta sendo utilizado?
-RUN chmod +x ./flask-run-win.sh 
+CMD ["npm","run","start"]
+# Parece que o NGINX bloqueia o client de utilizar volume, então para Dev é melhor retirar ele.
+# FROM nginx 
+EXPOSE 80
+# expose é do beanstalk ou melhor, qualquer cloud service
+# COPY --from=main  /client/build /usr/share/nginx/html 
 
-CMD ["python","-u","./app.py"]
-
+# drwxr-xr-x 
+# drwxr-xr-x
