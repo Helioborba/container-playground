@@ -1,9 +1,9 @@
-import {useEffect, useState } from "react";
+import {useEffect, useState, useContext } from "react";
 import {Box, Typography, Grid, Button} from "@mui/material";
 import Nav from "../components/UI/nav/nav.js";
 import { FormControl, TextField } from "@mui/material";
 import City from '../models/city.js';
-
+import ListData from "../context/listData.js";
 
 
 //////////////////////////////////////////////
@@ -29,7 +29,7 @@ const Home = (props) => {
     const [nameInput, setNameInput] = useState('');
     const [coordXInput, setCoordXInput] = useState('');
     const [coordYInput, setCoordYInput] = useState('');
-
+    const ctxLoading = useContext(ListData);
     // Used to check if string is a number
     function isNumeric(value) {
         return /^-?\d+$/.test(value);
@@ -92,19 +92,22 @@ const Home = (props) => {
                   'Content-Type': 'application/json',
                 },
                 body: city.toJson()
-              })
-              .then(response => response.json())
-              .then(data => {
-                console.log('Success:', data);
-              })
-              .catch((error) => {
+            })
+            .then(response => response.json())
+            .then(data => {
+                // console.log('Success:', data);
+            })
+            .catch((error) => {
                 console.error('Error:', error);
-              });
-            // Log that a call was made successfully
-            props.logData.push({text:`Data sent to: ${postUrl}`,time: new Date().toLocaleString()})
+            });
 
-            // setVal(!val)
-            city.print();
+            // Log that a call was made successfully
+            ctxLoading.logData.push({text:`Data sent to: ${postUrl}`,time: new Date().toLocaleString()});
+
+            // Send a signal to the context manager telling its time to load new cities
+            ctxLoading.setLoadingCities(true);
+
+            // clear the text from the form
             setNameInput('');
             setCoordXInput('');
             setCoordYInput('');
@@ -113,8 +116,8 @@ const Home = (props) => {
     
     function log() {
         const jsx = [];
-        if (props.logData[0] != null) {
-            props.logData.map( (jsxData,index) => {
+        if (ctxLoading.logData[0] != null) {
+            ctxLoading.logData.map( (jsxData,index) => {
                 jsx.push(<Typography key={index}>{`${jsxData.text} at ${jsxData.time}`}</Typography>)
             })
             return jsx;

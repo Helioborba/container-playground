@@ -4,6 +4,7 @@ import Router from './components/Router/Router';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
+import { ListDataProvider } from './context/listData.js';
 // need to pick all those providers and merge them into a single import provider
 import { blue } from '@mui/material/colors';
 
@@ -36,10 +37,12 @@ const theme = createTheme({
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline/>
-        <div className={style.App}>
-          <Router></Router> 
-        </div>
+      <ListDataProvider>
+        <CssBaseline/>
+          <div className={style.App}>
+            <Router></Router> 
+          </div>
+      </ListDataProvider>
     </ThemeProvider>
   );
 }
