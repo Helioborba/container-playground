@@ -1,5 +1,5 @@
 // common imports
-import React from "react";
+import React,{useState} from "react";
 import {Box} from "@mui/material";
 import {Route,Routes} from "react-router-dom";
 
@@ -8,13 +8,17 @@ import Home from "../../pages/Home.js";
 import List from "../../pages/List.js";
 import NotFound from "../../pages/NotFound.js";
 
+// Better use context for this!
+
 const Router = (props) => {
+    const [logData, setLogData] = useState([])
+
     return (
         <React.Fragment>
             <Box>
                 <Routes>
-                    <Route path="/" element={<Home></Home>}/>
-                    <Route path="/list" element={<List></List>}/>
+                    <Route path="/" element={<Home logData={logData}></Home>}/>
+                    <Route path="/list" element={<List logData={logData}></List>}/>
                     <Route path="/*" element={<NotFound></NotFound>}/>
                 </Routes>
             </Box>

@@ -5,30 +5,39 @@ import { FormControl, TextField } from "@mui/material";
 import City from '../models/city.js';
 
 
+
+//////////////////////////////////////////////
+
+
+
+
+
+
+
+
+////////////////////// ADD A REQUEST QUEUE EX : {TEXT, DATE, QUEUE NUMBER}
+/////////////////////// THIS WAY WE CAN ALSO SAY : WORKING ON REQUEST QUEUEU NUMBER 123012340 FOR EXAMPLE!
+
+
+///////////////////////////////////////////
 // The urls for api calls
 const postUrl = 'server/add';
-const getUrl = 'server/all';
 
 
 const Home = (props) => {
-    const [loadedCities, setLoadedCities] = useState();
-    const [errorInput, setErrorInput] = useState({error:false,component:null,text:null}); // this should actually become each input, else when one is triggered, all is
-    
+    const [errorInput, setErrorInput] = useState({error:false, component:null, text:null}); // this should actually become each input, else when one is triggered, all is
     const [nameInput, setNameInput] = useState('');
     const [coordXInput, setCoordXInput] = useState('');
     const [coordYInput, setCoordYInput] = useState('');
-    
 
     // Used to check if string is a number
     function isNumeric(value) {
-        console.log('tested:',/^-?\d+$/.test(value))
         return /^-?\d+$/.test(value);
     }
 
     // This function is used to clear the erros in case the user types something
     function clearError() {
-        setErrorInput({error:false,component:null,text:null});
-        console.log('triggered');
+        setErrorInput({error:false, component:null, text:null});
         // console.log(val)
     }
 
@@ -55,34 +64,45 @@ const Home = (props) => {
         // Checks if any data is null and raise errors; later need to check if a int is happening in the coords
         if(nameInput === '') {
             // In case city name is null
-            setErrorInput({error:true,component:'name',text:'Por favor insira o nome da cidade.'})
+            setErrorInput({error:true, component:'name', text:'Por favor insira o nome da cidade.'})
 
         } else if (coordXInput === '') {
             // In case coord X is null
-            setErrorInput({error:true,component:'xCoords',text:'Por favor insira a coordenada X.'})
+            setErrorInput({error:true, component:'xCoords', text:'Por favor insira a coordenada X.'})
 
         } else if (coordYInput === '') {
             // In case coord Y is null
-            setErrorInput({error:true,component:'yCoords',text:'Por favor insira a coordenada Y.'})
+            setErrorInput({error:true, component:'yCoords', text:'Por favor insira a coordenada Y.'})
 
         } else if (!isNumeric(coordXInput)) {
             // In case coord Y is null
-            setErrorInput({error:true,component:'xCoords',text:'Por favor insira um número inteiro.'})
+            setErrorInput({error:true, component:'xCoords', text:'Por favor insira um número inteiro.'})
 
         } else if (!isNumeric(coordYInput)) {
             // In case coord Y is null
-            setErrorInput({error:true,component:'yCoords',text:'Por favor insira um número inteiro.'})
+            setErrorInput({error:true, component:'yCoords', text:'Por favor insira um número inteiro.'})
 
         } else {
             // Creates the city object
             const city = new City(nameInput,  coordXInput,  coordYInput)
-    
-            // sends the city object
-            fetch(getUrl)
-            .then(res => res.json())
-            .then(parsedData => setLoadedCities(parsedData))
-            .catch(err => err)
-    
+            
+            fetch(postUrl, {
+                method: 'POST', // or 'PUT'
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: city.toJson()
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log('Success:', data);
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+            // Log that a call was made successfully
+            props.logData.push({text:`Data sent to: ${postUrl}`,time: new Date().toLocaleString()})
+
             // setVal(!val)
             city.print();
             setNameInput('');
@@ -92,21 +112,17 @@ const Home = (props) => {
     }
     
     function log() {
+        const jsx = [];
+        if (props.logData[0] != null) {
+            props.logData.map( (jsxData,index) => {
+                jsx.push(<Typography key={index}>{`${jsxData.text} at ${jsxData.time}`}</Typography>)
+            })
+            return jsx;
+        }
         return (
-            <Typography>Data sent to: </Typography>
+            <Typography>No call yet.</Typography>
         )
     }
-
-    // not usefull yet
-    useEffect( () => {
-        const identifier = setTimeout( () => {
-        console.log(loadedCities);
-        return () => {
-            clearTimeout(identifier);
-        };
-      })
-    },[loadedCities])
-  
 
     return(
         <Box sx={{width:"100vw", minHeight:"100vh", backgroundColor:"#555"}}>
@@ -210,7 +226,7 @@ const Home = (props) => {
                         </Grid>
                         <Grid item xs={12} sx={{backgroundColor:'#444',borderRadius:1,height:"100%",minHeight:"100px"}}>
                            {log()}
-                        </Grid>   
+                        </Grid>
                     </Grid>
                 </Grid>
             </Box>

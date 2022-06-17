@@ -5,6 +5,7 @@ import redis
 from flask import jsonify,request
 from rq import Worker, Queue
 import time
+import random #only for test
 from tasks.task1 import count_words_at_url, get_all_db, add_db
 from datetime import datetime
 from core.coreWorker import conn
@@ -51,56 +52,58 @@ def gedata():
     time.sleep(2)
     json.append(
         {  
-            "value: ": job.result,
-            "job_ID: ": job.id,
-            "status: ": job.get_status(),
-            "name":"hey",
-            "x":1,
-            "y":1,
-            "worker":workers[0].name
+            "worker": {
+                "worker_name":workers[0].name,
+                "state":workers[0].state,
+                "birth":workers[0].birth_date,
+                "job count":workers[0].successful_job_count,
+                "working time":workers[0].total_working_time,
+            }
         }
     )
-    job2 = q.jobs
-    for q in job2:
-            resQ = None
-            try:
-                resQ = q.meta['creation_date']
-            except: # this will only mean that the meta is not visible
-                resQ = 'No creation date added' 
-            json.append(
-            {
-                "allJbs": {
-                    "value: ": q.result,
-                    "job_ID: ": q.id,
-                    "status: ": q.get_status(),
-                    "creation date: ": resQ
-                }  
-            })
+
+    
+    # job2 = q.jobs
+    # for q in job2:
+    #         resQ = None
+    #         try:
+    #             resQ = q.meta['creation_date']
+    #         except: # this will only mean that the meta is not visible
+    #             resQ = 'No creation date added' 
+    #         json.append(
+    #         {
+    #             "allJbs": {
+    #                 "value: ": q.result,
+    #                 "job_ID: ": q.id,
+    #                 "status: ": q.get_status(),
+    #                 "creation date: ": resQ
+    #             }  
+    #         })
     # print("ressssssss",job2.result)
-    for x in workers:
-        for q in job2:
-            resQ = None
-            try:
-                resQ = q.meta['creation_date']
-            except: #this will only mean that the meta is not visible
-                resQ = 'No creation date added' 
-            json.append(
-            {
-                "worker": {
-                    "worker Name: ":x.name,
-                    "worker State: ":x.state, 
-                    "working time: ":x.total_working_time,
-                    "fail rate: ":x.failed_job_count,
-                    "success rate":x.successful_job_count
-                },
-                "queue": {
-                    "value: ": q.result,
-                    "job_ID: ": q.id,
-                    "status: ": q.get_status(),
-                    "creation date: ": resQ
-                }  
-            }
-    )
+    # for x in workers:
+    #     for q in job2:
+    #         resQ = None
+    #         try:
+    #             resQ = q.meta['creation_date']
+    #         except: #this will only mean that the meta is not visible
+    #             resQ = 'No creation date added' 
+    #         json.append(
+    #         {
+    #             "worker": {
+    #                 "worker Name: ":x.name,
+    #                 "worker State: ":x.state, 
+    #                 "working time: ":x.total_working_time,
+    #                 "fail rate: ":x.failed_job_count,
+    #                 "success rate":x.successful_job_count
+    #             },
+    #             "queue": {
+    #                 "value: ": q.result,
+    #                 "job_ID: ": q.id,
+    #                 "status: ": q.get_status(),
+    #                 "creation date: ": resQ
+    #             }  
+    #         }
+    # )
     return jsonify(json)
 
 
@@ -145,6 +148,7 @@ def all():
     job.save_meta()
     newCityData = job.result
 
+    time.sleep(random.randint(3, 14))
     # query_city = City.query.all()
     # newCityData = []
     # for city in query_city:
