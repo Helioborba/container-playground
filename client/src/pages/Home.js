@@ -1,4 +1,4 @@
-import {useEffect, useState, useContext } from "react";
+import {useState, useContext } from "react";
 import {Box, Typography, Grid, Button} from "@mui/material";
 import Nav from "../components/UI/nav/nav.js";
 import { FormControl, TextField } from "@mui/material";
@@ -30,6 +30,7 @@ const Home = (props) => {
     const [coordXInput, setCoordXInput] = useState('');
     const [coordYInput, setCoordYInput] = useState('');
     const ctxLoading = useContext(ListData);
+    
     // Used to check if string is a number
     function isNumeric(value) {
         return /^-?\d+$/.test(value);
@@ -96,17 +97,19 @@ const Home = (props) => {
             .then(response => response.json())
             .then(data => {
                 // console.log('Success:', data);
+                
             })
+            
             .catch((error) => {
                 console.error('Error:', error);
             });
-
+            
             // Log that a call was made successfully
             ctxLoading.logData.push({text:`Data sent to: ${postUrl}`,time: new Date().toLocaleString()});
-
+            
             // Send a signal to the context manager telling its time to load new cities
             ctxLoading.setLoadingCities(true);
-
+            
             // clear the text from the form
             setNameInput('');
             setCoordXInput('');

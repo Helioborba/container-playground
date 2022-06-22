@@ -1,10 +1,6 @@
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
-/**
- * Holds the canvas context and the nodes of the current marches
- * 
- */
 const ListData = React.createContext({
     loadedCities: [null],
     setLoadedCities: () => {},
@@ -15,13 +11,13 @@ const ListData = React.createContext({
 });
 
 export const ListDataProvider = (props) => {
-    const [loadedCities, setLoadedCities] = useState([null]);
+    const [loadedCities, setLoadedCities] = useState([]);
     const [loading, setLoadingCities] = useState(true);
     const [logData, setLogData] = useState([]);
     
     const getUrl = 'server/all';
 
-    function fetchData() {
+    const fetchData = useCallback(function fetchData() {
         fetch(getUrl)
         .then(res => res.json())
         .then(parsedData => {
@@ -29,10 +25,10 @@ export const ListDataProvider = (props) => {
             setLoadedCities(parsedData);
             // Important: tells the log that the job was done, and trigger the useeffect
             setLoadingCities(false);
-     
+            console.log('this is parsed data',parsedData)
         })
         .catch(err => err)
-    }
+    },[logData, loading])
 
     useEffect( () => {
         const identifier = setTimeout( () => {
@@ -41,7 +37,7 @@ export const ListDataProvider = (props) => {
             clearTimeout(identifier);
         };
       })
-    },[loading])
+    },[loading, fetchData])
 
     return(
         <ListData.Provider value={{

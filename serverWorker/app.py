@@ -1,12 +1,9 @@
 
-from crypt import methods
-from unicodedata import name
-import redis
 from flask import jsonify,request
 from rq import Worker, Queue
 import time
 import random #only for test
-from tasks.task1 import count_words_at_url, get_all_db, add_db
+from tasks.task1 import count_words_at_url, get_all_db
 from datetime import datetime
 from core.coreWorker import conn
 from model.city import City
@@ -23,8 +20,8 @@ def home():
 
 @app.route('/gets',methods=['GET','POST'])
 def gedata():
-    # datetime object containing current date and time
 
+    # datetime object containing current date and time
     now = datetime.now()
 
     # dd/mm/YY H:M:S
@@ -62,48 +59,6 @@ def gedata():
         }
     )
 
-    
-    # job2 = q.jobs
-    # for q in job2:
-    #         resQ = None
-    #         try:
-    #             resQ = q.meta['creation_date']
-    #         except: # this will only mean that the meta is not visible
-    #             resQ = 'No creation date added' 
-    #         json.append(
-    #         {
-    #             "allJbs": {
-    #                 "value: ": q.result,
-    #                 "job_ID: ": q.id,
-    #                 "status: ": q.get_status(),
-    #                 "creation date: ": resQ
-    #             }  
-    #         })
-    # print("ressssssss",job2.result)
-    # for x in workers:
-    #     for q in job2:
-    #         resQ = None
-    #         try:
-    #             resQ = q.meta['creation_date']
-    #         except: #this will only mean that the meta is not visible
-    #             resQ = 'No creation date added' 
-    #         json.append(
-    #         {
-    #             "worker": {
-    #                 "worker Name: ":x.name,
-    #                 "worker State: ":x.state, 
-    #                 "working time: ":x.total_working_time,
-    #                 "fail rate: ":x.failed_job_count,
-    #                 "success rate":x.successful_job_count
-    #             },
-    #             "queue": {
-    #                 "value: ": q.result,
-    #                 "job_ID: ": q.id,
-    #                 "status: ": q.get_status(),
-    #                 "creation date: ": resQ
-    #             }  
-    #         }
-    # )
     return jsonify(json)
 
 
@@ -129,6 +84,8 @@ def add():
 def search():
     data = request.get_json()
     query_city = City.query.filter(City.name.like(f"{data['city']}%"))
+
+     # Creates the return data
     newCityData = []
     for city in query_city:
         newCityData.append({
@@ -137,6 +94,36 @@ def search():
             "coordinate_x": city.coordinate_x,
             "coordinate_y": city.coordinate_y
         })
+
+    return jsonify({"city":newCityData})
+
+@app.route('/del',methods=['POST'])
+def delet():
+    # find the city by id then delete it
+    data = request.get_json()
+    query_city = City.query.get(data['id'])
+    
+    # Creates the return data
+    newCityData = []
+    try:
+        newCityData.append({
+            "error": False,
+            "id": query_city.id,
+            "name": query_city.name,
+            "coordinate_x": query_city.coordinate_x,
+            "coordinate_y": query_city.coordinate_y
+        })
+
+        db.session.delete(query_city)
+        db.session.commit()
+    except:
+        newCityData.append({
+            "error":'Error ocurred when deleting the city, is the request modified?'
+        })
+
+    
+
+    # returns the deleted city data
     return jsonify({"city":newCityData})
 
 @app.route('/all',methods=['GET'])
@@ -148,31 +135,25 @@ def all():
     job.save_meta()
     newCityData = job.result
 
-    time.sleep(random.randint(3, 14))
-    # query_city = City.query.all()
-    # newCityData = []
-    # for city in query_city:
-    #     newCityData.append({
-    #         "id": city.id,
-    #         "name": city.name,
-    #         "coordinate_x": city.coordinate_x,
-    #         "coordinate_y": city.coordinate_y
-    #     })
+    # Used only to simulate some loading time
+    time.sleep(random.randint(3, 7))
+    
     return jsonify({"city":newCityData})
 
 
-@app.route('/db',methods=['GET','POST'])
-def db_access():
-    query_city = City.query.all()
-    json = []
-    for value in query_city:
-        json.append(
-            {
-                "name":value.name,
-                "x":value.coordinate_x,
-                "y":value.coordinate_y
-            }
-        )
+# @app.route('/db',methods=['GET','POST'])
+# def db_access():
+#     query_city = City.query.all()
+#     json = []
+#     for value in query_city:
+#         json.append(
+#             {
+#                 "name":value.name,
+#                 "x":value.coordinate_x,
+#                 "y":value.coordinate_y
+#             }
+#         )
+        
 # Start the app as the main
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3200, debug=True)

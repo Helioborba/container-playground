@@ -2,6 +2,7 @@ import requests
 import time
 from model.city import City, db
 from sqlalchemy.orm import sessionmaker
+
 Session = sessionmaker(bind=db)
 session = Session()
 
@@ -21,7 +22,6 @@ def get_all_db():
             "coordinate_x": city.coordinate_x,
             "coordinate_y": city.coordinate_y
         })
-    time.sleep(10)
     session.close_all()
     db.dispose()
     return newCityData 
