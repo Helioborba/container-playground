@@ -3,6 +3,7 @@ services:
     client:
         stdin_open: true
         #command: npm run start
+        image: gaborba2100e404/container-playground_client
         build:
             context: "./client"
             dockerfile: Dockerfile
@@ -21,6 +22,7 @@ services:
             - worker
     server_worker:
         stdin_open: true
+        image: gaborba2100e404/container-playground_server_worker
         #command: npm run start
         build:
             context: "./serverWorker"
@@ -38,6 +40,7 @@ services:
     worker:
         stdin_open: true
         #command: npm run start
+        image: gaborba2100e404/container-playground_worker
         build:
             context: "./worker"
             dockerfile: Dockerfile
@@ -51,47 +54,6 @@ services:
         depends_on:
             - redis
 
-    # api:
-    #     stdin_open: true
-    #     environment:
-    #         - NODE_ENV=development
-    #         - CHOKIDAR_USEPOLLING=true
-    #     build: 
-    #         context: "./api"
-    #         dockerfile: Dockerfile.dev
-    #     restart: on-failure
-    #     volumes: 
-    #         - /api/node_modules
-    #         - 'D:/workshop/live-data/api:/api'
-    # nginx:
-    #     restart: always
-    #     build: 
-    #         context: ./nginx
-    #         dockerfile: Dockerfile.dev
-    #     ports:
-    #         - "5000:80"
-    #     depends_on: 
-    #         - client
-    #         - client_php
-    # client_php:
-    #     stdin_open: true
-    #     build:
-    #         context: "./client/"
-    #         dockerfile: Dockerfile
-    #     restart: on-failure
-    #     volumes:
-    #         - ./client/src:/var/www/html/
-    #     environment: 
-    #         - URL=mysql_db
-    #         - USERDB=user
-    #         - PASS=password
-    #         - DB=inventario
-    #     ports:         
-    #         - "2000:80"
-    #     links:
-    #         - mysql_db
-    #redis-cli -h 127.0.0.1 -p 6379 -a 'eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81' 
-
     redis:
         image: redis
         restart: on-failure
@@ -100,8 +62,10 @@ services:
         command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
         volumes: 
         - ./redis/cache:/data
+
     nginx:
         restart: always
+        image: gaborba2100e404/container-playground_nginx
         build: 
             context: ./nginx
             dockerfile: Dockerfile.dev

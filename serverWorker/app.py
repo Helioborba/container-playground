@@ -1,4 +1,4 @@
-
+# ​I here for sonic, were sonic, this sonic?
 from flask import jsonify,request
 from rq import Worker, Queue
 import time
@@ -54,7 +54,7 @@ def gedata():
                 "state":workers[0].state,
                 "birth":workers[0].birth_date,
                 "job count":workers[0].successful_job_count,
-                "working time":workers[0].total_working_time,
+                "working time":workers[0].total_working_time
             }
         }
     )
@@ -126,7 +126,7 @@ def delet():
     # returns the deleted city data
     return jsonify({"city":newCityData})
 
-@app.route('/all',methods=['GET'])
+@app.route('/all', methods=['GET'])
 def all():
     # Create redis queue
     q = Queue(connection=conn)
@@ -134,10 +134,8 @@ def all():
     job.meta['creation_date'] = dt_string
     job.save_meta()
     newCityData = job.result
-
-    # Used only to simulate some loading time
     time.sleep(random.randint(3, 7))
-    
+    # Used only to simulate some loading time    
     return jsonify({"city":newCityData})
 
 

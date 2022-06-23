@@ -14,7 +14,7 @@ def get_all_db():
     city = None
     query_city = session.query(City).all()
     newCityData = []
-    print("query",query_city)
+    print("query", query_city)
     for city in query_city:
         newCityData.append({
             "id": city.id,
